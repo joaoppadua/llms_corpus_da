@@ -1,3 +1,6 @@
 .DS_Store
 credentials.py
 credentials.cpython-311.pyc
+.env
+__pycache__/
+.ipynb_checkpoints/
