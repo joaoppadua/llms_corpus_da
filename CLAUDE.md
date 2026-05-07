@@ -23,11 +23,11 @@ Research repository for papers/presentations on using LLMs to do **discourse ana
   - **Round 3 (2026-05):**
     - `smith_claude_3.ipynb` — Anthropic (`claude-opus-4-7`)
     - `smith_chat_gpt_3.ipynb` — OpenAI (`gpt-5.5`)
-    - `smith_gemini_3.ipynb` — Google Gemini (`gemini-3.1-pro-preview`, via `google-genai` SDK)
+    - `smith_gemini_3.ipynb` — Google Gemini (`gemini-3.1-flash-lite-preview`, via `google-genai` SDK)
   - `analyze_responses.ipynb` — cross-model sampling/comparison; writes `data/sample_responses.md`
 - `data/` — inputs and outputs of the experiment.
   - Inputs: `18USC924c1.txt` (statute), `smith_case_summary.txt` (facts).
-  - Outputs: `smith_responses_<model>[_<variant>].csv` with columns `answer`, `reasoning` (one row per generation, ~100 rows per file). Round-3 CSVs encode the model family in the filename: `smith_responses_claude_opus_4_7.csv`, `smith_responses_gpt_5_5.csv`, `smith_responses_gemini_3_1_pro.csv`.
+  - Outputs: `smith_responses_<model>[_<variant>].csv` with columns `answer`, `reasoning` (one row per generation, ~100 rows per file). Round-3 CSVs encode the model family in the filename: `smith_responses_claude_opus_4_7.csv`, `smith_responses_gpt_5_5.csv`, `smith_responses_gemini_3_1_flash_lite.csv`.
 
 ## Credentials
 
@@ -77,7 +77,7 @@ Then execute cells top-to-bottom. The 100-call loop hits the provider's API dire
 ### Round 3 (2026-05)
 - **Claude (`smith_claude_3.ipynb`):** `claude-opus-4-7`, `temperature=1.0`, `max_tokens=2048`. Same `system="You are an ordinary native speaker of English"` as the legacy notebook — preserved deliberately.
 - **OpenAI (`smith_chat_gpt_3.ipynb`):** `gpt-5.5` via `client.chat.completions.create`. **Temperature is intentionally not passed** — at the time of writing, the OpenAI docs for `gpt-5.5` did not confirm `temperature` as supported (recent reasoning-capable flagships often reject it), so the notebook relies on the model's default sampling. If you confirm temperature is accepted, set it explicitly.
-- **Gemini (`smith_gemini_3.ipynb`):** `gemini-3.1-pro-preview` via the current `google-genai` SDK (`from google import genai`; `client.models.generate_content(...)`). The legacy `google-generativeai` SDK is deprecated and is not used in this round. **Temperature is intentionally not passed** for the same documentation reason as GPT-5.5.
+- **Gemini (`smith_gemini_3.ipynb`):** `gemini-3.1-flash-lite-preview` via the current `google-genai` SDK (`from google import genai`; `client.models.generate_content(...)`). The legacy `google-generativeai` SDK is deprecated and is not used in this round. Switched from `gemini-3.1-pro-preview` to Flash-Lite for tractable latency on the 100-call loop. **Temperature is intentionally not passed** for the same documentation reason as GPT-5.5.
 
 ### Future work
 The `analyze_responses.ipynb` notebook is the natural candidate for a **Marimo** port — its workload (filter, slice, re-render across the saved CSVs) benefits from Marimo's reactive model and would let a presentation slide through model/sample-size/variant choices live. The data-generation notebooks (`smith_*.ipynb`) intentionally stay in Jupyter: they are fire-once-save-CSV, and Marimo's reactivity would risk re-firing the paid 100-call loop on upstream changes.
